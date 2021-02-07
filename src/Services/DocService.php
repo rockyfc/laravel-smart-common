@@ -6,6 +6,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use ReflectionException;
+use Smart\ApiDoc\Services\ConfigService;
 use Smart\Common\Comment\ActionComment;
 use Smart\Common\Comment\ControllerComment;
 use Smart\Common\Comment\ResourceComment;
@@ -332,17 +333,18 @@ class DocService
 
     public function apiPrefix()
     {
-        return config('doc.filters');
+        return ConfigService::filters();
     }
 
     public function commonRequest()
     {
-        return config('doc.commonParams');
+        return ConfigService::commonParams();
+
     }
 
     public function docPrefix()
     {
-        return config('doc.prefix');
+        return ConfigService::prefix();
     }
 
     /**

@@ -5,6 +5,7 @@ namespace Smart\Common\Comment;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use ReflectionException;
+use Smart\ApiDoc\Services\ConfigService;
 
 /**
  * 解析器
@@ -77,6 +78,6 @@ class Resolver
             'filterName' => 'filter',
             'relationName' => 'relations',
             'sortName' => 'sort',
-        ], config('doc.query'));
+        ], ConfigService::query());
     }
 }
