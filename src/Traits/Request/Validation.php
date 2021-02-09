@@ -13,15 +13,10 @@ trait Validation
 
     /**
      * 获取model
-     * @throws \Exception
      * @return Model
      */
     public function model()
     {
-        if (!property_exists($this, 'modelClass')) {
-            throw new \Exception(__CLASS__ . '属性modelClass未定义。');
-        }
-
         if (!$this->model) {
             $this->model = new $this->modelClass();
         }
@@ -41,7 +36,6 @@ trait Validation
 
     /**
      * 字段验证规则
-     * @throws \Exception
      * @return array
      */
     public function modelRules()
@@ -77,14 +71,13 @@ trait Validation
      *  ];
      * ```
      *
-     * @throws \Exception
      * @return array
      */
     public function attributes()
     {
         $model = $this->model();
-        if ($model and method_exists($model, 'fillableAttributesLabels')) {
-            return $model->fillableAttributesLabels();
+        if ($model and method_exists($model, 'attributesLabels')) {
+            return $model->attributesLabels();
         }
 
         return [];
