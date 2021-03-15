@@ -24,8 +24,8 @@ trait Parameters
 
     /**
      * 获取关联对象字段
-     * @throws ValidationException
      * @return mixed
+     * @throws ValidationException
      */
     public function getFilteredRelations()
     {
@@ -33,11 +33,12 @@ trait Parameters
             $rs = [];
             if ($relations = $this->input('relations')) {
                 foreach (explode(',', $relations) as $relation) {
-                    //$callback(Str::camel($relation));
-                    $rs[$relation] = function ($query) {
-                        //默认给每个关联查询都加上一个limit，防止超大数据查询
-                        $query->limit(15);
-                    };
+                    foreach ($this->splitRelations($relation) as $relationKey) {
+                        $rs[$relationKey] = function ($query) {
+                            //默认给每个关联查询都加上一个limit，防止超大数据查询
+                            $query->limit(15);
+                        };
+                    }
                 }
             }
 
@@ -45,6 +46,32 @@ trait Parameters
         } catch (RelationNotFoundException $e) {
             throw  ValidationException::withMessages(['relations' => 'relations参数不正确']);
         }
+    }
+
+    /**
+     * 将用.分隔的字符串，格式化成合法的数组格式
+     * @param $str
+     * @return array
+     */
+    protected function splitRelations($str)
+    {
+        $tmp = [];
+        $first = '';
+        $str1 = $str;
+        while (!empty($str)) {
+            if (strpos($str, '.') === false) {
+                break;
+            }
+
+            $pos = strpos($str, '.');
+            $first .= '.' . substr($str, 0, $pos);
+            $tmp[] = trim($first, '.');
+            $str = substr($str, $pos);
+
+            $str = trim($str, '.');
+        }
+        $tmp[] = $str1;
+        return $tmp;
     }
 
     /**
