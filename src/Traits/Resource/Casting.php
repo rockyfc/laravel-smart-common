@@ -59,6 +59,10 @@ trait Casting
      */
     protected function castAttribute($attribute, $value, $rules)
     {
+        if(is_object($value) and !($value instanceof \Illuminate\Support\Carbon)){
+            return $value;
+        }
+
         $parser = new RuleParser($rules[$attribute]);
         $type = strtolower($parser->phpType());
 
