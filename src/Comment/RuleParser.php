@@ -86,9 +86,8 @@ class RuleParser
             }
         }
 
-        foreach($typeInRule as $type){echo $type;
+        foreach($typeInRule as $type){
             if(class_exists($type)){
-
                 return $type;
             }
         }
