@@ -50,9 +50,9 @@ class ResourceResolver extends Resolver
 
     /**
      * 获取所有属性字段的基本信息
-     * @throws ResourceMissDataException
-     * @throws ReflectionException
      * @return array
+     * @throws ReflectionException
+     * @throws ResourceMissDataException
      */
     public function fields()
     {
@@ -65,6 +65,12 @@ class ResourceResolver extends Resolver
             $error = get_class($this->resource) . '资源类没有找到' . $scenario . '场景的返回值，或者返回值为空';
 
             throw new ResourceMissDataException($error);
+        }
+
+        $relations = null;
+        //判断一下，资源类中是否存在relations方法，如果存在，则从资源类中获取资源对应关系
+        if (method_exists($this->resource, 'relations')) {
+            $relations = (array)$this->resource->relations();
         }
 
         $labels = (array)$this->resourceLabels();
@@ -90,16 +96,25 @@ class ResourceResolver extends Resolver
                 $type = '[ ]';
             }
 
-            if ($value instanceof ResourceCollection) {
-                $this->addToRelationsFields($attribute, $value->collects, $comment);
+            if (is_array($relations)) {
+                if (isset($relations[$attribute])) {
+                    $this->addToRelationsFields($attribute, $relations[$attribute], $comment);
 
-                continue;
-            }
-            if ($value instanceof JsonResource) {
-                $this->addToRelationsFields($attribute, get_class($value), $comment);
+                    continue;
+                }
+            } else {
+                if ($value instanceof ResourceCollection) {
+                    $this->addToRelationsFields($attribute, $value->collects, $comment);
 
-                continue;
+                    continue;
+                }
+                if ($value instanceof JsonResource) {
+                    $this->addToRelationsFields($attribute, get_class($value), $comment);
+
+                    continue;
+                }
             }
+
 
             $data[$attribute] = [
                 //'required' => null,
@@ -122,13 +137,38 @@ class ResourceResolver extends Resolver
     }
 
     /**
+     * @return array
+     * @throws ResourceMissDataException
+     */
+    protected function parseResourceToArrayMethod()
+    {
+        $array = [];
+        try {
+            //当解析toArray产生异常的时候，说明toArray()方法中代码中写法较为复杂，文档程序解释不了
+            $array = $this->resource->toArray(request());
+        } catch (\Throwable $e) {
+            //如果toArray解析有问题，则检查用户是否自行实现了fields方法，如果实现了则从fields方法中获取要返回的字段
+            if (method_exists($this->resource, 'fields')) {
+                $columns = array_values($this->resource->fields());
+                $array = array_combine($columns, $columns);
+            } else {
+                $msg = get_class($this->resource) . '::toArray()方法解析失败，请创建' . get_class($this->resource) . '::fields()函数来声明返回值';
+                throw new ResourceMissDataException($msg);
+            }
+        }
+
+        return $array;
+    }
+
+    /**
      * 格式化返回值
      * @return array
      */
     protected function toArray()
     {
+        $array = $this->parseResourceToArrayMethod();
         $data = [];
-        foreach ($this->resource->toArray(request()) as $attribute => $val) {
+        foreach ($array as $attribute => $val) {
             if (is_array($val)) {
                 $data[$attribute] = [];
                 foreach ($val as $i => $v) {
@@ -189,8 +229,8 @@ class ResourceResolver extends Resolver
      *
      * 首先检查当前的resource类中有没有相关的常量，如果没有则检查
      * @param $attribute
-     * @throws ReflectionException
      * @return null|array
+     * @throws ReflectionException
      */
     protected function attributeOptions($attribute)
     {

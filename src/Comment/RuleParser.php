@@ -79,9 +79,17 @@ class RuleParser
      */
     public function type()
     {
+        $typeInRule = $this->typeInRule();
         foreach ($this->ruleTypeToViewType as $ruleType => $viewType) {
-            if (in_array($ruleType, $this->typeInRule())) {
+            if (in_array($ruleType, $typeInRule)) {
                 return $viewType;
+            }
+        }
+
+        foreach($typeInRule as $type){echo $type;
+            if(class_exists($type)){
+
+                return $type;
             }
         }
 
@@ -223,6 +231,10 @@ class RuleParser
     protected function strtolower($rule)
     {
         foreach ($rule as &$name) {
+            //数据类型有可能是类名，如果是类名称，则不转化
+            if(class_exists($name)){
+                continue;
+            }
             $name = strtolower($name);
         }
 
