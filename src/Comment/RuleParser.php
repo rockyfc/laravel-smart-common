@@ -86,8 +86,8 @@ class RuleParser
             }
         }
 
-        foreach($typeInRule as $type){
-            if(class_exists($type)){
+        foreach ($typeInRule as $type) {
+            if (class_exists($type)) {
                 return $type;
             }
         }
@@ -178,6 +178,12 @@ class RuleParser
     {
         $tmp = [];
         foreach ($this->rule as $k => $value) {
+            if (preg_match('/|/', $value)) {
+                $arr = explode('|', $value);
+                $tmp[] = array_shift($arr);
+                continue;
+            }
+
             $arr = explode(':', $value);
             $tmp[] = array_shift($arr);
         }
@@ -231,7 +237,7 @@ class RuleParser
     {
         foreach ($rule as &$name) {
             //数据类型有可能是类名，如果是类名称，则不转化
-            if(class_exists($name)){
+            if (class_exists($name)) {
                 continue;
             }
             $name = strtolower($name);
