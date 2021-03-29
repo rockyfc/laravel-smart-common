@@ -26,8 +26,8 @@ class FormRequestResolver extends Resolver
     }
 
     /**
-     * @throws ReflectionException
      * @return array
+     * @throws ReflectionException
      */
     public function fields()
     {
@@ -38,7 +38,9 @@ class FormRequestResolver extends Resolver
 
         $data = [];
         foreach ($rules as $attribute => $rule) {
-            $data[$attribute] = $this->parseRule($attribute, (array)$rule);
+            if (!preg_match('/\./', $attribute)) {
+                $data[$attribute] = $this->parseRule($attribute, (array)$rule);
+            }
         }
 
         return $data;
@@ -47,9 +49,9 @@ class FormRequestResolver extends Resolver
     /**
      * 列表页获取数据
      * @param ResourceResolver $resolver
-     * @throws ReflectionException
-     * @throws ResourceMissDataException
      * @return array
+     * @throws ResourceMissDataException
+     * @throws ReflectionException
      */
     public function listFields(ResourceResolver $resolver = null)
     {
@@ -63,9 +65,9 @@ class FormRequestResolver extends Resolver
      * 详情接口要获取的字段
      * （理论上，只要支持get请求方式，就可以支持用户按需获取）
      * @param null|ResourceResolver $resolver
-     * @throws ReflectionException
-     * @throws ResourceMissDataException
      * @return array
+     * @throws ResourceMissDataException
+     * @throws ReflectionException
      */
     public function viewFields(ResourceResolver $resolver = null)
     {
@@ -166,8 +168,8 @@ class FormRequestResolver extends Resolver
 
     /**
      * 将request里面的input参数名称包裹上filter标签
-     * @throws ReflectionException
      * @return array
+     * @throws ReflectionException
      */
     protected function convertToFilter()
     {
@@ -193,8 +195,8 @@ class FormRequestResolver extends Resolver
     /**
      * @param $attribute
      * @param $rule
-     * @throws ReflectionException
      * @return array
+     * @throws ReflectionException
      */
     protected function parseRule($attribute, $rule)
     {
@@ -220,8 +222,8 @@ class FormRequestResolver extends Resolver
     /**
      * 获取属性可选值
      * @param $attribute
-     * @throws ReflectionException
      * @return array
+     * @throws ReflectionException
      */
     protected function attributeOptions($attribute)
     {
