@@ -34,7 +34,7 @@ trait Parameters
             if ($relations = $this->input('relations')) {
                 foreach (explode(',', $relations) as $relation) {
                     foreach ($this->splitRelations($relation) as $relationKey) {
-                        $rs[$relationKey] = function ($query) {
+                        $rs[Str::camel($relationKey)] = function ($query) {
                             //默认给每个关联查询都加上一个limit，防止超大数据查询
                             $query->limit(15);
                         };
