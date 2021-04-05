@@ -178,6 +178,9 @@ class RuleParser
     {
         $tmp = [];
         foreach ($this->rule as $k => $value) {
+            if (is_callable($value)) {
+                continue;
+            }
             if (preg_match('/|/', $value)) {
                 $arr = explode('|', $value);
                 $tmp[] = array_shift($arr);
@@ -197,6 +200,10 @@ class RuleParser
     protected function parseRule()
     {
         foreach ($this->rule as $rule) {
+            if (is_callable($rule)) {
+                continue;
+            }
+
             if (!preg_match('/:/', $rule)) {
                 continue;
             }
@@ -237,7 +244,7 @@ class RuleParser
     {
         foreach ($rule as &$name) {
             //数据类型有可能是类名，如果是类名称，则不转化
-            if (class_exists($name)) {
+            if (is_callable($name) or class_exists($name)) {
                 continue;
             }
             $name = strtolower($name);
