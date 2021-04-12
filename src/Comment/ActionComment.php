@@ -9,6 +9,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Str;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Tags\See;
 use phpDocumentor\Reflection\DocBlockFactory;
@@ -18,6 +19,7 @@ use phpDocumentor\Reflection\Types\Object_;
 use ReflectionException;
 use Smart\Common\Exceptions\ResourceMissDataException;
 use Smart\Common\Exceptions\RouteMissActionException;
+use Smart\Common\Services\ConfigService;
 
 /**
  * 解析action
@@ -89,9 +91,9 @@ class ActionComment extends Comment
     }
 
     /**
-     * @throws ReflectionException
-     * @throws ResourceMissDataException
      * @return array
+     * @throws ResourceMissDataException
+     * @throws ReflectionException
      */
     public function input()
     {
@@ -128,9 +130,9 @@ class ActionComment extends Comment
 
     /**
      * 返回值
-     * @throws ReflectionException
-     * @throws ResourceMissDataException
      * @return null|array
+     * @throws ResourceMissDataException
+     * @throws ReflectionException
      */
     public function output()
     {
@@ -145,6 +147,11 @@ class ActionComment extends Comment
         ];
     }
 
+    protected function unSnake($camelCaps, $separator = '_')
+    {
+        return strtolower(preg_replace('/([a-z])([A-Z])/', "$1" . $separator . "$2", $camelCaps));
+    }
+
     /**
      * 获取url所需的参数
      * @param Route $route
@@ -157,6 +164,11 @@ class ActionComment extends Comment
         $tmp = [];
         foreach ($this->reflector->getParameters() as $parameter) {
             $name = $parameter->getName();
+
+            if (ConfigService::routeFormat() == 'underline') {
+                $name = $this->unSnake($name);
+            }
+
             if (!in_array($name, $params)) {
                 continue;
             }
@@ -216,8 +228,8 @@ class ActionComment extends Comment
 
     /**
      * 获取一个有效的FormRequest类
-     * @throws ReflectionException
      * @return string
+     * @throws ReflectionException
      */
     public function getValidFormRequestClass()
     {
@@ -237,8 +249,8 @@ class ActionComment extends Comment
 
     /**
      * 获取一个有效的FormRequest对象
-     * @throws ReflectionException
      * @return FormRequest|mixed
+     * @throws ReflectionException
      */
     public function getValidFormRequestInstance()
     {
@@ -249,8 +261,8 @@ class ActionComment extends Comment
 
     /**
      * 解析一个有效的FormRequest
-     * @throws ReflectionException
      * @return FormRequestResolver
+     * @throws ReflectionException
      */
     public function parseValidFormRequest()
     {
@@ -428,8 +440,8 @@ class ActionComment extends Comment
     /**
      * 获取某一个类的属性名称
      * @param $class
-     * @throws ReflectionException
      * @return array
+     * @throws ReflectionException
      */
     protected function getClassProperties($class)
     {
@@ -494,8 +506,8 @@ class ActionComment extends Comment
     /**
      * 判断类是否是用户自定义的资源类
      * @param $class
-     * @throws ReflectionException
      * @return bool
+     * @throws ReflectionException
      */
     protected function isCustomResource($class)
     {
@@ -510,8 +522,8 @@ class ActionComment extends Comment
     /**
      * 判断是分页
      * @param $class
-     * @throws ReflectionException
      * @return bool
+     * @throws ReflectionException
      */
     protected function isPaginator($class)
     {
@@ -525,8 +537,8 @@ class ActionComment extends Comment
 
     /**
      * 是否存在分页
-     * @throws ReflectionException
      * @return bool
+     * @throws ReflectionException
      */
     protected function hasPaginator()
     {
@@ -541,8 +553,8 @@ class ActionComment extends Comment
 
     /**
      * 判断当前action是否支持分页
-     * @throws ReflectionException
      * @return bool
+     * @throws ReflectionException
      */
     protected function hasSort()
     {
@@ -574,8 +586,8 @@ class ActionComment extends Comment
 
     /**
      * @param $class
-     * @throws ReflectionException
      * @return bool
+     * @throws ReflectionException
      */
     protected function isFormRequestClass($class)
     {
@@ -589,8 +601,8 @@ class ActionComment extends Comment
      *
      * 一般的，返回集合的action都被视为是列表action，
      * 列表action应当支持按需获取、自定义排序、查询条件、关联对象的获取
-     * @throws ReflectionException
      * @return bool
+     * @throws ReflectionException
      */
     protected function isCollectionAction()
     {
