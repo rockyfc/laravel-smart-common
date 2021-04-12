@@ -147,6 +147,12 @@ class ActionComment extends Comment
         ];
     }
 
+    /**
+     * 将蛇形命名改成下划线命名
+     * @param $camelCaps
+     * @param string $separator
+     * @return string
+     */
     protected function unSnake($camelCaps, $separator = '_')
     {
         return strtolower(preg_replace('/([a-z])([A-Z])/', "$1" . $separator . "$2", $camelCaps));
