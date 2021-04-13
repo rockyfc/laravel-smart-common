@@ -178,19 +178,19 @@ class RuleParser
     {
         $tmp = [];
         foreach ($this->rule as $k => $value) {
-            if (is_callable($value)) {
-                continue;
-            }
-            if (preg_match('/|/', $value)) {
-                $arr = explode('|', $value);
+
+            if (is_string($value)) {
+                if (preg_match('/|/', $value)) {
+                    $arr = explode('|', $value);
+                    $tmp[] = array_shift($arr);
+                    continue;
+                }
+
+                $arr = explode(':', $value);
                 $tmp[] = array_shift($arr);
                 continue;
             }
-
-            $arr = explode(':', $value);
-            $tmp[] = array_shift($arr);
         }
-
         return $tmp;
     }
 
