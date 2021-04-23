@@ -89,12 +89,17 @@ trait Parameters
      */
     public function getResolvedSorts()
     {
+        $allowed = $this->sorts();
         $sort = $this->getSort();
+
+        if(empty($sort) and isset($allowed[0])){
+            $sort = $allowed[0];
+        }
+
         if (!$sort) {
             return [];
         }
         $arr = explode(',', $sort);
-        $allowed = $this->sorts();
 
         $rs = [];
         foreach ($arr as $value) {
