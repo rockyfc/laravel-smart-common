@@ -84,7 +84,7 @@ trait Parameters
     }
 
     /**
-     * 解析排序值
+     * 解析排序值，当用户没有传排序的时候，默认按照{{@see sorts()}}函数第一个值排序。
      * @throws ValidationException
      */
     public function getResolvedSorts()
@@ -99,6 +99,7 @@ trait Parameters
         if (!$sort) {
             return [];
         }
+
         $arr = explode(',', $sort);
 
         $rs = [];
