@@ -21,7 +21,7 @@ trait Validation
             return $this->model;
         }
 
-        if (!$this->modelClass) {
+        if ($this->modelClass) {
             $this->model = new $this->modelClass();
         }
 
