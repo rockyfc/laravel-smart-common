@@ -17,7 +17,11 @@ trait Validation
      */
     public function model()
     {
-        if (!$this->model) {
+        if ($this->model) {
+            return $this->model;
+        }
+
+        if (!$this->modelClass) {
             $this->model = new $this->modelClass();
         }
 
