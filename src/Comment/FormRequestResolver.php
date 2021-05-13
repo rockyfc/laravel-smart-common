@@ -241,7 +241,7 @@ class FormRequestResolver extends Resolver
         }
 
         $model = $this->request->model();
-        if ($this->hasConstInClass($constName, $model)) {
+        if ($model and $this->hasConstInClass($constName, $model)) {
             $const = $this->getClassConstants($model);
 
             return (array)$const[$constName];
