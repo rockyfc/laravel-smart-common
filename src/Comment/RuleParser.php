@@ -216,7 +216,11 @@ class RuleParser
             }
 
             if ('in' === $name) {
-                $this->in = explode(',', $params);
+                $in = explode(',', $params);
+                foreach($in as &$v){
+                    $v = trim($v,'"');
+                }
+                $this->in = $in;
             }
         }
     }

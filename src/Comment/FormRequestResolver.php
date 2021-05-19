@@ -201,20 +201,37 @@ class FormRequestResolver extends Resolver
     protected function parseRule($attribute, $rule)
     {
         $attributes = $this->request->attributes();
-
         $comment = $attributes[$attribute] ?? $attribute;
 
+        $parser = new RuleParser($rule);
+        $in = $parser->in();
+
         if ($options = $this->attributeOptions($attribute)) {
+
+            //如果rule规则中有in规则，则从$options中取出in规则部分
+            if ($in) {
+                $tmp = [];
+                foreach ($options as $k1 => $v1) {
+                    $k1 = (string)$k1;
+                    foreach ($in as $v2) {
+                        $v2 = (string)$v2;
+                        if ($k1 === $v2) {
+                            $tmp[$k1] = $v1;
+                        }
+                    }
+                }
+
+                $options = $tmp;
+            }
+
             $comment .= '。可选值：' . $this->print($options);
         }
-
-        $parser = new RuleParser($rule);
 
         return (array)new FieldObject([
             'required' => $parser->required(),
             'type' => $parser->typeDetail(),
             'default' => $parser->defaultValue(),
-            'options' => array_keys($options),
+            'options' => $in ? $in : array_keys($options),
             'comment' => $comment,
         ]);
     }
