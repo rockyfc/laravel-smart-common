@@ -178,7 +178,6 @@ class RuleParser
     {
         $tmp = [];
         foreach ($this->rule as $k => $value) {
-
             if (is_string($value)) {
                 if (preg_match('/|/', $value)) {
                     $arr = explode('|', $value);
@@ -217,8 +216,8 @@ class RuleParser
 
             if ('in' === $name) {
                 $in = explode(',', $params);
-                foreach($in as &$v){
-                    $v = trim($v,'"');
+                foreach ($in as &$v) {
+                    $v = trim($v, '"');
                 }
                 $this->in = $in;
             }

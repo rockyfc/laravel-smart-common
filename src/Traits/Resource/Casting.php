@@ -59,7 +59,7 @@ trait Casting
      */
     protected function castAttribute($attribute, $value, $rules)
     {
-        if(is_object($value) and !($value instanceof \Illuminate\Support\Carbon)){
+        if (is_object($value) and !($value instanceof \Illuminate\Support\Carbon)) {
             return $value;
         }
 

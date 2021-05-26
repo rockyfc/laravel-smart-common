@@ -61,6 +61,17 @@ class FormRequestResolver extends Resolver
         );
     }
 
+
+    /**
+     * 下载功能的action请求参数
+     * @return array
+     * @throws ReflectionException
+     */
+    public function downloadFields()
+    {
+        return $this->convertToFilter();
+    }
+
     /**
      * 详情接口要获取的字段
      * （理论上，只要支持get请求方式，就可以支持用户按需获取）

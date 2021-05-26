@@ -92,7 +92,7 @@ trait Parameters
         $allowed = $this->sorts();
         $sort = $this->getSort();
 
-        if(empty($sort) and isset($allowed[0])){
+        if (empty($sort) and isset($allowed[0])) {
             $sort = $allowed[0];
         }
 

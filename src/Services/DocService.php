@@ -339,7 +339,6 @@ class DocService
     public function commonRequest()
     {
         return ConfigService::commonParams();
-
     }
 
     public function docPrefix()

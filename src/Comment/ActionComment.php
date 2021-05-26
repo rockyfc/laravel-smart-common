@@ -9,7 +9,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Routing\Route;
-use Illuminate\Support\Str;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Tags\See;
 use phpDocumentor\Reflection\DocBlockFactory;
@@ -91,9 +90,9 @@ class ActionComment extends Comment
     }
 
     /**
-     * @return array
-     * @throws ResourceMissDataException
      * @throws ReflectionException
+     * @throws ResourceMissDataException
+     * @return array
      */
     public function input()
     {
@@ -113,10 +112,16 @@ class ActionComment extends Comment
             if ($this->hasPaginator()) {
                 $data = array_merge($data, $this->requestResolver->pageFields());
             }
-        } //如果是单纯的get请求，需要支持按需获取
+        }
+        //下载文件的请求
+        elseif (in_array('GET', $this->route->methods) and $this->isDownloadAction()) {
+            $data = $this->requestResolver->downloadFields();
+        }
+        //如果是单纯的get请求，需要支持按需获取
         elseif (in_array('GET', $this->route->methods)) {
             $data = $this->requestResolver->viewFields($this->resourceResolver);
-        } //get之外的其他请求不支持按需获取
+        }
+        //get之外的其他请求不支持按需获取
         else {
             $data = $this->requestResolver->fields();
         }
@@ -130,9 +135,9 @@ class ActionComment extends Comment
 
     /**
      * 返回值
-     * @return null|array
-     * @throws ResourceMissDataException
      * @throws ReflectionException
+     * @throws ResourceMissDataException
+     * @return array|null
      */
     public function output()
     {
@@ -145,17 +150,6 @@ class ActionComment extends Comment
             'class' => get_class($this->resourceResolver->resource),
             'output' => $this->resourceResolver->fields(),
         ];
-    }
-
-    /**
-     * 将蛇形命名改成下划线命名
-     * @param $camelCaps
-     * @param string $separator
-     * @return string
-     */
-    protected function unSnake($camelCaps, $separator = '_')
-    {
-        return strtolower(preg_replace('/([a-z])([A-Z])/', "$1" . $separator . "$2", $camelCaps));
     }
 
     /**
@@ -234,12 +228,11 @@ class ActionComment extends Comment
 
     /**
      * 获取一个有效的FormRequest类
-     * @return string
      * @throws ReflectionException
+     * @return string
      */
     public function getValidFormRequestClass()
     {
-        /** @var \ReflectionParameter[] $params */
         $params = $this->reflector->getParameters();
 
         foreach ($params as $param) {
@@ -255,8 +248,8 @@ class ActionComment extends Comment
 
     /**
      * 获取一个有效的FormRequest对象
-     * @return FormRequest|mixed
      * @throws ReflectionException
+     * @return FormRequest|mixed
      */
     public function getValidFormRequestInstance()
     {
@@ -267,8 +260,8 @@ class ActionComment extends Comment
 
     /**
      * 解析一个有效的FormRequest
-     * @return FormRequestResolver
      * @throws ReflectionException
+     * @return FormRequestResolver
      */
     public function parseValidFormRequest()
     {
@@ -279,7 +272,7 @@ class ActionComment extends Comment
 
     /**
      * 从头see 标签中获取资源类
-     * @return null|array
+     * @return array|null
      */
     public function getClassesFromSeeTag()
     {
@@ -367,6 +360,17 @@ class ActionComment extends Comment
     }
 
     /**
+     * 将蛇形命名改成下划线命名
+     * @param $camelCaps
+     * @param string $separator
+     * @return string
+     */
+    protected function unSnake($camelCaps, $separator = '_')
+    {
+        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1' . $separator . '$2', $camelCaps));
+    }
+
+    /**
      * 解析一个FormRequest
      * @param FormRequest $request
      * @return FormRequestResolver
@@ -383,7 +387,7 @@ class ActionComment extends Comment
 
     /**
      * 解析一个有效的Resource
-     * @return null|ResourceResolver
+     * @return ResourceResolver|null
      */
     protected function parseValidResource()
     {
@@ -446,8 +450,8 @@ class ActionComment extends Comment
     /**
      * 获取某一个类的属性名称
      * @param $class
-     * @return array
      * @throws ReflectionException
+     * @return array
      */
     protected function getClassProperties($class)
     {
@@ -477,7 +481,7 @@ class ActionComment extends Comment
 
     /**
      * @param $object
-     * @return null|string
+     * @return string|null
      */
     protected function parseObject($object)
     {
@@ -512,8 +516,8 @@ class ActionComment extends Comment
     /**
      * 判断类是否是用户自定义的资源类
      * @param $class
-     * @return bool
      * @throws ReflectionException
+     * @return bool
      */
     protected function isCustomResource($class)
     {
@@ -528,8 +532,8 @@ class ActionComment extends Comment
     /**
      * 判断是分页
      * @param $class
-     * @return bool
      * @throws ReflectionException
+     * @return bool
      */
     protected function isPaginator($class)
     {
@@ -543,8 +547,8 @@ class ActionComment extends Comment
 
     /**
      * 是否存在分页
-     * @return bool
      * @throws ReflectionException
+     * @return bool
      */
     protected function hasPaginator()
     {
@@ -559,8 +563,8 @@ class ActionComment extends Comment
 
     /**
      * 判断当前action是否支持分页
-     * @return bool
      * @throws ReflectionException
+     * @return bool
      */
     protected function hasSort()
     {
@@ -592,8 +596,8 @@ class ActionComment extends Comment
 
     /**
      * @param $class
-     * @return bool
      * @throws ReflectionException
+     * @return bool
      */
     protected function isFormRequestClass($class)
     {
@@ -607,8 +611,8 @@ class ActionComment extends Comment
      *
      * 一般的，返回集合的action都被视为是列表action，
      * 列表action应当支持按需获取、自定义排序、查询条件、关联对象的获取
-     * @return bool
      * @throws ReflectionException
+     * @return bool
      */
     protected function isCollectionAction()
     {
@@ -622,14 +626,23 @@ class ActionComment extends Comment
         }
     }
 
-    /*
-     * 判断当前action 是否是一个详情
-     *
-     * 一般的，详情action应当支持字段按需获取
+    /**
+     * 是否是下载文件的action
      * @return bool
      */
-    /*protected function isInfoAction()
+    protected function isDownloadAction()
     {
-        return (bool)($resource = $this->getResource() and $resource instanceof JsonResource);
-    }*/
+        $response = $this->getResourcesFromReturnTag();
+        if (!isset($response[0])) {
+            return false;
+        }
+
+        $classes = [
+            '\Symfony\Component\HttpFoundation\BinaryFileResponse',
+            '\Symfony\Component\HttpFoundation\StreamedResponse',
+        ];
+
+        return in_array($response[0], $classes);
+    }
+
 }
