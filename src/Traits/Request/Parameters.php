@@ -17,9 +17,20 @@ trait Parameters
         return (array)$this->input('filter', []);
     }
 
+    /**
+     * @return string
+     */
     public function getRelations()
     {
         return (string)$this->input('relations');
+    }
+
+    /**
+     * @return string
+     */
+    public function getRelationsSize()
+    {
+        return (int)$this->input('relations_size',15);
     }
 
     /**
@@ -36,7 +47,7 @@ trait Parameters
                     foreach ($this->splitRelations($relation) as $relationKey) {
                         $rs[Str::camel($relationKey)] = function ($query) {
                             //默认给每个关联查询都加上一个limit，防止超大数据查询
-                            $query->limit(15);
+                            $query->limit($this->getRelationsSize());
                         };
                     }
                 }
