@@ -37,26 +37,24 @@ trait Parameters
     /**
      * 获取关联对象字段
      * @return mixed
+     * @throws ValidationException
      */
     public function getFilteredRelations()
     {
-        if ($relations = $this->input('relations', null)) {
-            $data = explode(',', $relations);
-            return array_filter($data, function ($value) {
-                return !empty($value);
-            });
-        }
-        return [];
-
-        /*try {
+        try {
             $rs = [];
             if ($relations = $this->input('relations')) {
                 foreach (explode(',', $relations) as $relation) {
                     foreach ($this->splitRelations($relation) as $relationKey) {
-                        $rs[Str::camel($relationKey)] = function ($query) {
+                        if (empty($relationKey)) {
+                            continue;
+                        }
+                        $rs[] = Str::camel($relationKey);
+
+                        /*$rs[Str::camel($relationKey)] = function ($query) {
                             //默认给每个关联查询都加上一个limit，防止超大数据查询
                             $query->limit($this->getRelationsSize());
-                        };
+                        };*/
                     }
                 }
             }
@@ -64,14 +62,13 @@ trait Parameters
             return $rs;
         } catch (RelationNotFoundException $e) {
             throw  ValidationException::withMessages(['relations' => 'relations参数不正确']);
-        }*/
+        }
     }
 
     /**
      * 将用.分隔的字符串，格式化成合法的数组格式
      * @param $str
      * @return array
-     * @deprecated
      */
     protected function splitRelations($str)
     {
