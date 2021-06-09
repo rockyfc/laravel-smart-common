@@ -27,20 +27,28 @@ trait Parameters
 
     /**
      * @return string
+     * @deprecated
      */
     public function getRelationsSize()
     {
-        return (int)$this->input('relations_size',15);
+        return (int)$this->input('relations_size', 15);
     }
 
     /**
      * 获取关联对象字段
      * @return mixed
-     * @throws ValidationException
      */
     public function getFilteredRelations()
     {
-        try {
+        if ($relations = $this->input('relations', null)) {
+            $data = explode(',', $relations);
+            return array_filter($data, function ($value) {
+                return !empty($value);
+            });
+        }
+        return [];
+
+        /*try {
             $rs = [];
             if ($relations = $this->input('relations')) {
                 foreach (explode(',', $relations) as $relation) {
@@ -56,13 +64,14 @@ trait Parameters
             return $rs;
         } catch (RelationNotFoundException $e) {
             throw  ValidationException::withMessages(['relations' => 'relations参数不正确']);
-        }
+        }*/
     }
 
     /**
      * 将用.分隔的字符串，格式化成合法的数组格式
      * @param $str
      * @return array
+     * @deprecated
      */
     protected function splitRelations($str)
     {
