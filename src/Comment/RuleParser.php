@@ -49,6 +49,8 @@ class RuleParser
         'url' => 'url',
         'array' => 'array',
         'json' => 'json',
+        'image' => 'image',
+        'file' => 'file',
     ];
 
     /**
