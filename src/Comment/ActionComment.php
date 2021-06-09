@@ -249,12 +249,16 @@ class ActionComment extends Comment
     /**
      * 获取一个有效的FormRequest对象
      * @throws ReflectionException
-     * @return FormRequest|mixed
+     * @return FormRequest|null
      */
     public function getValidFormRequestInstance()
     {
         if ($class = $this->getValidFormRequestClass()) {
-            return new $class();
+            $request = new $class();
+            if(method_exists($request,'setScenario')){
+                $request->setScenario($this->actionName);
+            }
+            return $request;
         }
     }
 
