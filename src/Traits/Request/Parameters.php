@@ -110,7 +110,7 @@ trait Parameters
         $sort = $this->getSort();
 
         if (empty($sort) and isset($allowed[0])) {
-            $sort = $allowed[0];
+            $sort = '-' . $allowed[0];
         }
 
         if (!$sort) {
