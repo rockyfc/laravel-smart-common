@@ -624,7 +624,7 @@ class ActionComment extends Comment
         if ($resource) {
             $resourceClass = array_pop($resource);
             $this->parentClass($resourceClass, $classes);
-            if (in_array('Illuminate\Http\Resources\Json\ResourceCollection', $classes)) {
+            if (in_array('Illuminate\Http\Resources\Json\ResourceCollection', (array)$classes)) {
                 return true;
             }
         }
