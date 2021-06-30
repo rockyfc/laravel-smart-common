@@ -119,7 +119,10 @@ class ActionComment extends Comment
         }
         //如果是单纯的get请求，需要支持按需获取
         elseif (in_array('GET', $this->route->methods)) {
-            $data = $this->requestResolver->viewFields($this->resourceResolver);
+            $data = array_merge(
+                $this->requestResolver->viewFields($this->resourceResolver),
+                $this->requestResolver->fields()
+            );
         }
         //get之外的其他请求不支持按需获取
         else {

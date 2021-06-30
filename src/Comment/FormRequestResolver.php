@@ -86,15 +86,16 @@ class FormRequestResolver extends Resolver
 
         $attributes = $resolver ? array_keys($resolver->fields()) : [];
         $relations = $resolver ? $resolver->getRelationsFields() : [];
-        $data = [
-            $query['fieldsName'] => (array)new FieldObject([
+        $data = [];
+        if($attributes){
+            $data[$query['fieldsName']] = (array)new FieldObject([
                 'required' => false,
                 'type' => 'string',
                 'default' => '*',
                 'comment' => '要获取的字段，推荐按需获取，多个字段用英文逗号分隔。字段释义见返回值。',
                 'options' => $attributes,
-            ]),
-        ];
+            ]);
+        }
 
         if ($relations) {
             $data = array_merge($data, [
