@@ -42,9 +42,34 @@ class DocService
     }
 
     /**
-     * 获取所有controller注释
-     * @throws ReflectionException
      * @return array
+     */
+    /*public function uriMap()
+    {
+        $routers = $this->validRoutes();
+        $data = [];
+        foreach ($routers as $route) {
+            $data[$route->getName()] = $route->getActionName();
+        }
+
+        return $data;
+    }
+
+    public function treeUriMap(){
+        $arr = $this->uriMap();
+        $tree = [];
+        foreach($arr as $k=>$value){
+            $key = '$tree'."['".str_replace('.',"']['",$k)."'] = '".$value."';";
+            eval($key);
+        }
+
+        return $tree;
+    }*/
+
+    /**
+     * 获取所有controller注释
+     * @return array
+     * @throws ReflectionException
      */
     public function controllerComments()
     {
@@ -64,8 +89,8 @@ class DocService
     /**
      * 获取某个controller的注释
      * @param $controllerName
-     * @throws ReflectionException
      * @return array
+     * @throws ReflectionException
      */
     public function controllerComment($controllerName)
     {
@@ -107,8 +132,8 @@ class DocService
     /**
      * 根据关键字查找action，
      * @param null $keyword
-     * @throws ReflectionException
      * @return array
+     * @throws ReflectionException
      */
     public function actions($keyword = null)
     {
@@ -137,16 +162,16 @@ class DocService
      * 根据action获取一个action
      * @param $name
      * @param \Illuminate\Routing\Route $route
-     * @throws ReflectionException
-     * @throws ResourceMissDataException
      * @return array
+     * @throws ResourceMissDataException
+     * @throws ReflectionException
      */
     public function action($name, &$route = null)
     {
         $routes = $this->validRoutes();
         foreach ($routes as $route) {
             try {
-                if ($route->getActionName() !== $name) {
+                if ($route->getName() !== $name) {
                     continue;
                 }
 
@@ -207,8 +232,8 @@ class DocService
     /**
      * 根据一个类名获取其中的接口列表
      * @param string $controllerName
-     * @throws ReflectionException|ResourceMissDataException
      * @return array
+     * @throws ReflectionException|ResourceMissDataException
      */
     public function actionCommentsByController(string $controllerName)
     {
@@ -229,9 +254,9 @@ class DocService
     /**
      * 根据路由获取一个action注释信息
      * @param \Illuminate\Routing\Route $route
-     * @throws ReflectionException|RouteMissActionException
-     * @throws ResourceMissDataException
      * @return array
+     * @throws ResourceMissDataException
+     * @throws ReflectionException|RouteMissActionException
      */
     public function actionCommentByRoute(\Illuminate\Routing\Route $route)
     {
@@ -247,6 +272,7 @@ class DocService
             'action' => $route->getActionName(),
             'controller' => $this->controllerComment($controllerName),
             'name' => $route->uri(),
+            'route_name' => $route->getName(),
             'title' => $comment->title() ?? $route->getActionMethod(),
             'desc' => $comment->desc(),
             'methods' => $route->methods(),
@@ -267,8 +293,8 @@ class DocService
 
     /**
      * @param $resourceClass
-     * @throws ReflectionException|ResourceMissDataException
      * @return array
+     * @throws ReflectionException|ResourceMissDataException
      */
     public function resource($resourceClass)
     {
