@@ -533,7 +533,7 @@ class ActionComment extends Comment
         }
         $this->parentClass($class, $parents);
 
-        return in_array(JsonResource::class, $parents);
+        return in_array(JsonResource::class, (array)$parents);
     }
 
     /**
@@ -549,7 +549,7 @@ class ActionComment extends Comment
         }
         $this->parentClass($class, $parents);
 
-        return in_array(AbstractPaginator::class, $parents);
+        return in_array(AbstractPaginator::class, (array)$parents);
     }
 
     /**
@@ -592,8 +592,12 @@ class ActionComment extends Comment
      * @param $map
      * @throws ReflectionException
      */
-    protected function parentClass($class, &$map)
+    protected function parentClass($class, &$map=[])
     {
+        if(!class_exists($class)){
+            return;
+        }
+
         $ref = new \ReflectionClass($class);
         if ($parent = $ref->getParentClass()) {
             $map[] = trim($parent->getName(), '\\');
@@ -610,7 +614,7 @@ class ActionComment extends Comment
     {
         $this->parentClass($class, $parents);
 
-        return in_array(FormRequest::class, $parents);
+        return in_array(FormRequest::class, (array)$parents);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Smart\Common\Comment;
 
+use Illuminate\Routing\Controller;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\Types\Context;
@@ -68,7 +69,7 @@ class ControllerComment extends Comment
     public function actionByName($name)
     {
         /** @var \ReflectionMethod $actions */
-        $actions = $this->actions();
+        $actions = (array)$this->actions();
 
         foreach ($actions as $action) {
             if ($action->name === $name) {
@@ -89,13 +90,15 @@ class ControllerComment extends Comment
 
         $actions = $this->reflector->getMethods(\ReflectionMethod::IS_PUBLIC);
 
-        $parentReflector = $this->reflector->getParentClass();
+        //$parentReflector = $this->reflector->getParentClass();
+        $parentReflector = new ReflectionClass(Controller::class);
         $parentMethods = $parentReflector->getMethods();
 
         $names = [];
         foreach ($parentMethods as $method) {
             $names[] = $method->getName();
         }
+        //print_r($names);
 
         foreach ($actions as $action) {
             if (in_array($action->getName(), $names)) {
