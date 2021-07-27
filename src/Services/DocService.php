@@ -160,18 +160,18 @@ class DocService
 
     /**
      * 根据action获取一个action
-     * @param $name
+     * @param $actionName
      * @param \Illuminate\Routing\Route $route
      * @return array
-     * @throws ResourceMissDataException
      * @throws ReflectionException
+     * @throws ResourceMissDataException
      */
-    public function action($name, &$route = null)
+    public function action($actionName, &$route = null)
     {
         $routes = $this->validRoutes();
         foreach ($routes as $route) {
             try {
-                if ($route->getName() !== $name) {
+                if ($route->getActionName() !== $actionName) {
                     continue;
                 }
 
