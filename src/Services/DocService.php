@@ -151,7 +151,7 @@ class DocService
                     continue;
                 }
 
-                continue;
+                $data[] = $info;
             } catch (RouteMissActionException $e) {
                 $this->error[$route->getActionName()] = '路由' . $route->uri() . '未能匹配到Action：' . $route->getActionName();
             } catch (ResourceMissDataException $e) {
