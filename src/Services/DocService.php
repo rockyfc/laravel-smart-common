@@ -132,18 +132,23 @@ class DocService
     /**
      * 根据关键字查找action，
      * @param null $keyword
+     * @param string $module
      * @return array
      * @throws ReflectionException
      */
-    public function actions($keyword = null)
+    public function actions($keyword = null, $module = '')
     {
         $routes = $this->validRoutes();
         $data = [];
         foreach ($routes as $route) {
             try {
                 $info = $this->actionCommentByRoute($route);
-                if ($this->filterAction($info, $keyword)) {
-                    $data[] = $info;
+                if (!$this->filterAction($info, $keyword)) {
+                    continue;
+                }
+
+                if (!empty($module) and !$this->filterAction($info, $module)) {
+                    continue;
                 }
 
                 continue;
