@@ -239,6 +239,11 @@ class ActionComment extends Comment
         $params = $this->reflector->getParameters();
 
         foreach ($params as $param) {
+
+            if($param->getClass()===null){
+                continue;
+            }
+
             $class = $param->getClass()->getName();
 
             if (!$this->isFormRequestClass($class)) {
