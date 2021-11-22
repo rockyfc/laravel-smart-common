@@ -201,6 +201,10 @@ class DocService
             return true;
         }
 
+        if (preg_match('/' . $keyword . '/', $actionInfo['route_name'])) {
+            return true;
+        }
+
         if (preg_match('/' . $keyword . '/', $actionInfo['title'])) {
             return true;
         }
