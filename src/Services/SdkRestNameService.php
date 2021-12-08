@@ -3,6 +3,7 @@
 namespace Smart\Common\Services;
 
 use Illuminate\Routing\Route;
+use Illuminate\Support\Str;
 
 /**
  * Class SdkApiNameService
@@ -30,12 +31,19 @@ class SdkRestNameService
     public function generateApiName()
     {
         $suffix = 'Api';
-        $action = $this->getActionName();
+        //$action = $this->getActionName();
 
-        $arr = $this->resolverNamespace();
-        $namespace = implode('\\', $this->getNamespaceArr());
+        //$arr = $this->resolverNamespace();
+        //$namespace = implode('\\', $this->getNamespaceArr());
 
-        return $namespace . '\\' . ucfirst($arr['controller'] . ucfirst($action) . $suffix);
+        //return $namespace . '\\' . ucfirst($arr['controller'] . ucfirst($action) . $suffix);
+
+        $tmp = [];
+        foreach(explode('.',$this->route->getName()) as &$val){
+            $tmp[] = ucfirst(Str::camel($val));
+        }
+
+        return implode('\\',$tmp).$suffix;
     }
 
     /**
