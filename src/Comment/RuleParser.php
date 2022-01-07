@@ -51,6 +51,7 @@ class RuleParser
         'json' => 'json',
         'image' => 'image',
         'file' => 'file',
+        'date' => 'date'
     ];
 
     /**
