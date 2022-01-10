@@ -43,7 +43,10 @@ class SdkRestNameService
             $tmp[] = ucfirst(Str::camel($val));
         }
 
-        return implode('\\',$tmp).$suffix;
+        $className = array_pop($tmp).$suffix;
+        $controllerName = array_pop($tmp);
+
+        return implode('\\',$tmp).'\\'.$controllerName.'\\'.$controllerName.$className;
     }
 
     /**
