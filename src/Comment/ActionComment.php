@@ -101,7 +101,8 @@ class ActionComment extends Comment
         }
 
         //如果是GET请求，并且是获取一个集合数据的话，需要做筛选，排序，以及按需获取的的特殊处理
-        if (in_array('GET', $this->route->methods) and $this->isCollectionAction()) {
+        //if (in_array('GET', $this->route->methods) and $this->isCollectionAction()) {
+        if (in_array('GET', $this->route->methods) and $this->hasPaginator()) {
             $data = $this->requestResolver->listFields($this->resourceResolver);
             //是否存在排序
             if ($this->hasSort()) {
@@ -109,9 +110,9 @@ class ActionComment extends Comment
             }
 
             //是否存在分页
-            if ($this->hasPaginator()) {
+            //if ($this->hasPaginator()) {
                 $data = array_merge($data, $this->requestResolver->pageFields());
-            }
+            //}
         }
         //下载文件的请求
         elseif (in_array('GET', $this->route->methods) and $this->isDownloadAction()) {
