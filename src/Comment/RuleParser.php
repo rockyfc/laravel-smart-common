@@ -12,6 +12,7 @@ class RuleParser
      * @var false|string[]
      */
     protected $rule;
+    protected $attribute;
 
     protected $max;
     protected $min;
@@ -42,7 +43,7 @@ class RuleParser
         'integer' => 'integer',
         'bool' => 'boolean',
         'boolean' => 'boolean',
-        'numeric' => 'numeric',
+        'numeric' => 'float',
         'digits' => 'numeric',
         'digits_between' => 'numeric',
         'email' => 'email',
@@ -58,12 +59,13 @@ class RuleParser
      * RuleParser constructor.
      * @param $rule
      */
-    public function __construct($rule)
+    public function __construct($rule,$attribute=null)
     {
         if (is_string($rule)) {
             $rule = explode('|', $rule);
         }
         $this->rule = $this->strtolower($rule);
+        $this->attribute = $attribute;
         $this->parseRule();
     }
 
@@ -95,7 +97,46 @@ class RuleParser
             }
         }
 
-        return 'string';
+        return 'mixed';
+    }
+
+    /**
+     * 猜测数据类型
+     * @return string
+     */
+    public static function guessType($attribute){
+        if(static::endWith($attribute,'_id')){
+            return 'integer';
+        }
+        if(static::endWith($attribute,'_count')){
+            return 'integer';        
+        }
+        if(static::endWith($attribute,'_num')){
+            return 'integer';
+        }
+        if(static::endWith($attribute,'_name')){
+            return 'string';
+        }
+        if(static::endWith($attribute,'name')){
+            return 'string';
+        }
+        if(static::endWith($attribute,'_date')){
+            return 'string';
+        }
+        if(static::endWith($attribute,'_rate')){
+            return 'float';
+        }
+        return 'mixed';
+    }
+
+    // $str:原字符串，$suffix:子字符串（区分大小写）
+    protected static function endWith($str, $suffix)
+    {
+        $length = strlen($suffix);
+        if ($length == 0) {
+            return true;
+        }
+        return (substr($str, -$length) === $suffix);
     }
 
     /**
@@ -110,7 +151,7 @@ class RuleParser
             }
         }
 
-        return 'string';
+        return 'mixed';
     }
 
     /**

@@ -76,6 +76,7 @@ class ResourceResolver extends Resolver
         $labels = (array)$this->resourceLabels();
         $rules = (array)$this->resourceRules();
 
+
         $data = [];
         foreach ($array as $attribute => $value) {
             $comment = isset($labels[$attribute]) ? $labels[$attribute] : null;
@@ -88,8 +89,8 @@ class ResourceResolver extends Resolver
             if (isset($rules[$attribute])) {
                 $parser = new RuleParser($rules[$attribute]);
                 $type = $parser->typeDetail();
-            } elseif (preg_match('/_id/', $attribute)) {
-                $type = 'integer';
+            } else{
+                $type = RuleParser::guessType($attribute);
             }
 
             if (is_array($value)) {
