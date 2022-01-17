@@ -31,6 +31,8 @@ class RuleParser
         'numeric' => 'float',
         'digits' => 'float',
         'digits_between' => 'float',
+        'date' => 'string',
+        'datetime' => 'string',
     ];
 
     /**
@@ -109,7 +111,7 @@ class RuleParser
             return 'integer';
         }
         if(static::endWith($attribute,'_count')){
-            return 'integer';        
+            return 'integer';
         }
         if(static::endWith($attribute,'_num')){
             return 'integer';
@@ -151,7 +153,7 @@ class RuleParser
             }
         }
 
-        return 'mixed';
+        return 'string';
     }
 
     /**
