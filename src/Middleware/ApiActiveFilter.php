@@ -88,7 +88,7 @@ class ApiActiveFilter
      * 过滤一个结果集
      *
      * @param array $list
-     * @param null|string $prefix
+     * @param string|null $prefix
      * @return array
      */
     protected function filter(array $list, string $prefix = null)
@@ -119,7 +119,8 @@ class ApiActiveFilter
 
         $tmp = [];
         foreach ($item as $column => $value) {
-            if (!in_array($column, $rootFields)) {
+            if (!is_int($column) and !in_array($column, $rootFields)) {
+
                 continue;
             }
 
