@@ -119,27 +119,26 @@ class ApiActiveFilter
 
         $tmp = [];
         foreach ($item as $column => $value) {
-            if (!is_int($column) and !in_array($column, $rootFields)) {
 
+            if (!is_int($column) and !in_array($column, $rootFields)) {
                 continue;
             }
 
             if (is_int($column)) {
-                $rootFields = $this->extractFieldsFor($tpl, $prefix);
-                $rootFields = $this->extractRootFields($rootFields);
+                $rootFields2 = $this->extractFieldsFor($tpl, $prefix);
+                $rootFields2 = $this->extractRootFields($rootFields2);
 
-                $tmp[$column] = $this->filterItem($value, $rootFields, $prefix);
+                $tmp[$column] = $this->filterItem($value, $rootFields2, $prefix);
 
                 continue;
             }
 
             if (is_array($value)) {
-                $prefix = $prefix ? $prefix . '.' . $column : $column;
-                $rootFields = $this->extractFieldsFor($tpl, $prefix);
-                $rootFields = $this->extractRootFields($rootFields);
+                $prefix2 = $prefix ? $prefix . '.' . $column : $column;
+                $rootFields2 = $this->extractFieldsFor($tpl, $prefix2);
+                $rootFields2 = $this->extractRootFields($rootFields2);
 
-                $tmp[$column] = $this->filterItem($value, $rootFields, $prefix);
-
+                $tmp[$column] = $this->filterItem($value, $rootFields2, $prefix2);
                 continue;
             }
 
