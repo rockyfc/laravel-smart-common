@@ -17,17 +17,17 @@ trait AttributesRules
     /**
      * 根据验证规则验证当前model中的字段是否合法
      *
-     * @param null|array $attributes 要验证的属性
+     * @param array|null $attributes 要验证的属性
      * @param bool $isBail 如果你希望在某个属性第一次验证失败后停止运行验证规则，则将此参数设置为true
      * @return \Illuminate\Contracts\Validation\Validator
      */
     public function validate(array $attributes = null, $isBail = true)
     {
         if (null == $attributes or [] == $attributes) {
-            //只验证被修改了的字段
-            //$attributes = $this->getDirty();
+            // 只验证被修改了的字段
+            // $attributes = $this->getDirty();
 
-            //验证所有字段
+            // 验证所有字段
             $attributes = $this->attributes;
         }
 

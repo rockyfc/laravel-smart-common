@@ -31,22 +31,22 @@ class SdkRestNameService
     public function generateApiName()
     {
         $suffix = 'Api';
-        //$action = $this->getActionName();
+        // $action = $this->getActionName();
 
-        //$arr = $this->resolverNamespace();
-        //$namespace = implode('\\', $this->getNamespaceArr());
+        // $arr = $this->resolverNamespace();
+        // $namespace = implode('\\', $this->getNamespaceArr());
 
-        //return $namespace . '\\' . ucfirst($arr['controller'] . ucfirst($action) . $suffix);
+        // return $namespace . '\\' . ucfirst($arr['controller'] . ucfirst($action) . $suffix);
 
         $tmp = [];
-        foreach(explode('.',$this->route->getName()) as &$val){
+        foreach (explode('.', $this->route->getName()) as &$val) {
             $tmp[] = ucfirst(Str::camel($val));
         }
 
-        $className = array_pop($tmp).$suffix;
+        $className = array_pop($tmp) . $suffix;
         $controllerName = array_pop($tmp);
 
-        return implode('\\',$tmp).'\\'.$controllerName.'\\'.$controllerName.$className;
+        return implode('\\', $tmp) . '\\' . $controllerName . '\\' . $controllerName . $className;
     }
 
     /**

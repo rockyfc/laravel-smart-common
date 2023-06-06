@@ -54,14 +54,15 @@ class RuleParser
         'json' => 'json',
         'image' => 'image',
         'file' => 'file',
-        'date' => 'date'
+        'date' => 'date',
     ];
 
     /**
      * RuleParser constructor.
      * @param $rule
+     * @param mixed|null $attribute
      */
-    public function __construct($rule,$attribute=null)
+    public function __construct($rule, $attribute = null)
     {
         if (is_string($rule)) {
             $rule = explode('|', $rule);
@@ -104,41 +105,34 @@ class RuleParser
 
     /**
      * 猜测数据类型
+     * @param mixed $attribute
      * @return string
      */
-    public static function guessType($attribute){
-        if(static::endWith($attribute,'_id')){
+    public static function guessType($attribute)
+    {
+        if (static::endWith($attribute, '_id')) {
             return 'integer';
         }
-        if(static::endWith($attribute,'_count')){
+        if (static::endWith($attribute, '_count')) {
             return 'integer';
         }
-        if(static::endWith($attribute,'_num')){
+        if (static::endWith($attribute, '_num')) {
             return 'integer';
         }
-        if(static::endWith($attribute,'_name')){
+        if (static::endWith($attribute, '_name')) {
             return 'string';
         }
-        if(static::endWith($attribute,'name')){
+        if (static::endWith($attribute, 'name')) {
             return 'string';
         }
-        if(static::endWith($attribute,'_date')){
+        if (static::endWith($attribute, '_date')) {
             return 'string';
         }
-        if(static::endWith($attribute,'_rate')){
+        if (static::endWith($attribute, '_rate')) {
             return 'float';
         }
-        return 'mixed';
-    }
 
-    // $str:原字符串，$suffix:子字符串（区分大小写）
-    protected static function endWith($str, $suffix)
-    {
-        $length = strlen($suffix);
-        if ($length == 0) {
-            return true;
-        }
-        return (substr($str, -$length) === $suffix);
+        return 'mixed';
     }
 
     /**
@@ -217,6 +211,17 @@ class RuleParser
         return null;
     }
 
+    // $str:原字符串，$suffix:子字符串（区分大小写）
+    protected static function endWith($str, $suffix)
+    {
+        $length = strlen($suffix);
+        if ($length == 0) {
+            return true;
+        }
+
+        return substr($str, -$length) === $suffix;
+    }
+
     /**
      * @return string[]
      */
@@ -228,14 +233,17 @@ class RuleParser
                 if (preg_match('/|/', $value)) {
                     $arr = explode('|', $value);
                     $tmp[] = array_shift($arr);
+
                     continue;
                 }
 
                 $arr = explode(':', $value);
                 $tmp[] = array_shift($arr);
+
                 continue;
             }
         }
+
         return $tmp;
     }
 
@@ -292,7 +300,7 @@ class RuleParser
     protected function strtolower($rule)
     {
         foreach ($rule as &$name) {
-            //数据类型有可能是类名，如果是类名称，则不转化
+            // 数据类型有可能是类名，如果是类名称，则不转化
             if (is_callable($name) or class_exists($name)) {
                 continue;
             }

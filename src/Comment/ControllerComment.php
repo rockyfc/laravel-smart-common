@@ -7,7 +7,6 @@ use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\Types\Context;
 use phpDocumentor\Reflection\Types\ContextFactory;
-use ReflectionClass;
 
 /**
  * Controller解析
@@ -15,7 +14,7 @@ use ReflectionClass;
 class ControllerComment extends Comment
 {
     /**
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     protected $reflector;
 
@@ -44,7 +43,7 @@ class ControllerComment extends Comment
     }
 
     /**
-     * @return ReflectionClass
+     * @return \ReflectionClass
      */
     public function getReflector()
     {
@@ -52,7 +51,7 @@ class ControllerComment extends Comment
     }
 
     /**
-     * @return null|Context|DocBlock\Context
+     * @return Context|DocBlock\Context|null
      */
     public function context()
     {
@@ -90,15 +89,15 @@ class ControllerComment extends Comment
 
         $actions = $this->reflector->getMethods(\ReflectionMethod::IS_PUBLIC);
 
-        //$parentReflector = $this->reflector->getParentClass();
-        $parentReflector = new ReflectionClass(Controller::class);
+        // $parentReflector = $this->reflector->getParentClass();
+        $parentReflector = new \ReflectionClass(Controller::class);
         $parentMethods = $parentReflector->getMethods();
 
         $names = [];
         foreach ($parentMethods as $method) {
             $names[] = $method->getName();
         }
-        //print_r($names);
+        // print_r($names);
 
         foreach ($actions as $action) {
             if (in_array($action->getName(), $names)) {

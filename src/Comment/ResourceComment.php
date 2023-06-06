@@ -4,8 +4,6 @@ namespace Smart\Common\Comment;
 
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\Types\ContextFactory;
-use ReflectionException;
-use ReflectionMethod;
 
 /**
  * 解析resource
@@ -13,14 +11,14 @@ use ReflectionMethod;
 class ResourceComment extends Comment
 {
     /**
-     * @var ReflectionMethod
+     * @var \ReflectionMethod
      */
     protected $reflector;
 
     /**
      * ResourceComment constructor.
      * @param string $resourceClass
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function __construct(string $resourceClass)
     {

@@ -5,7 +5,6 @@ namespace Smart\Common\Services;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-use ReflectionException;
 use Smart\ApiDoc\Services\ConfigService;
 use Smart\Common\Comment\ActionComment;
 use Smart\Common\Comment\ControllerComment;
@@ -28,7 +27,7 @@ class DocService
         $routers = $this->validRoutes();
         $data = [];
         foreach ($routers as $route) {
-            //获取当前的controller对象
+            // 获取当前的controller对象
             $controller = $route->getController();
 
             $controllerName = get_class($controller);
@@ -68,8 +67,8 @@ class DocService
 
     /**
      * 获取所有controller注释
+     * @throws \ReflectionException
      * @return array
-     * @throws ReflectionException
      */
     public function controllerComments()
     {
@@ -89,8 +88,8 @@ class DocService
     /**
      * 获取某个controller的注释
      * @param $controllerName
+     * @throws \ReflectionException
      * @return array
-     * @throws ReflectionException
      */
     public function controllerComment($controllerName)
     {
@@ -133,8 +132,8 @@ class DocService
      * 根据关键字查找action，
      * @param null $keyword
      * @param string $module
+     * @throws \ReflectionException
      * @return array
-     * @throws ReflectionException
      */
     public function actions($keyword = null, $module = '')
     {
@@ -160,16 +159,16 @@ class DocService
         }
 
         return $this->arraySort($data, 'created_at');
-        //return $data;
+        // return $data;
     }
 
     /**
      * 根据action获取一个action
      * @param $routeName
      * @param \Illuminate\Routing\Route $route
-     * @return array
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws ResourceMissDataException
+     * @return array
      */
     public function action($routeName, &$route = null)
     {
@@ -241,13 +240,14 @@ class DocService
     /**
      * 根据一个类名获取其中的接口列表
      * @param string $controllerName
+     * @throws \ReflectionException|ResourceMissDataException
      * @return array
-     * @throws ReflectionException|ResourceMissDataException
      */
     public function actionCommentsByController(string $controllerName)
     {
         $routes = $this->actionRoutesByController($controllerName);
         $data = [];
+
         /** @var \Illuminate\Routing\Route $route */
         foreach ($routes as $route) {
             try {
@@ -263,15 +263,15 @@ class DocService
     /**
      * 根据路由获取一个action注释信息
      * @param \Illuminate\Routing\Route $route
-     * @return array
      * @throws ResourceMissDataException
-     * @throws ReflectionException|RouteMissActionException
+     * @throws \ReflectionException|RouteMissActionException
+     * @return array
      */
     public function actionCommentByRoute(\Illuminate\Routing\Route $route)
     {
         $controllerName = get_class($route->getController());
         $controllerComment = new ControllerComment($controllerName);
-        //echo get_class($route->getController()).'::'.$route->getActionMethod();
+        // echo get_class($route->getController()).'::'.$route->getActionMethod();
         $comment = new ActionComment(
             $controllerComment,
             $route
@@ -286,7 +286,7 @@ class DocService
             'desc' => $comment->desc(),
             'methods' => $route->methods(),
             'created_at' => $comment->date(),
-            //'tags' => $comment->tags(),
+            // 'tags' => $comment->tags(),
             'deprecated' => [
                 'isDeprecated' => $comment->isDeprecated(),
                 'desc' => $comment->deprecatedTag(),
@@ -302,8 +302,8 @@ class DocService
 
     /**
      * @param $resourceClass
+     * @throws \ReflectionException|ResourceMissDataException
      * @return array
-     * @throws ReflectionException|ResourceMissDataException
      */
     public function resource($resourceClass)
     {
@@ -339,6 +339,7 @@ class DocService
     {
         $routers = $this->filter();
         $data = [];
+
         /** @var \Illuminate\Routing\Route $route */
         foreach ($routers as $route) {
             $action = $route->getAction();
@@ -347,10 +348,10 @@ class DocService
                 continue;
             }
 
-            //获取当前的controller对象
+            // 获取当前的controller对象
             $controller = $route->getController();
 
-            if (!($controller instanceof Controller)) {
+            if (!$controller instanceof Controller) {
                 continue;
             }
 
@@ -408,10 +409,10 @@ class DocService
                 and !Str::startsWith($route->getAction()['prefix'], $this->apiPrefix())) {
                 continue;
             }
-            //echo $route->uri() . '-------' . $route->getAction()['prefix'] . "\n";
+            // echo $route->uri() . '-------' . $route->getAction()['prefix'] . "\n";
             $routers[] = $route;
         }
-        //exit;
+        // exit;
         return $routers;
     }
 

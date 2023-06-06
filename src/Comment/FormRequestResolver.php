@@ -3,7 +3,6 @@
 namespace Smart\Common\Comment;
 
 use Illuminate\Foundation\Http\FormRequest;
-use ReflectionException;
 use Smart\Common\Exceptions\ResourceMissDataException;
 
 /**
@@ -26,8 +25,8 @@ class FormRequestResolver extends Resolver
     }
 
     /**
+     * @throws \ReflectionException
      * @return array
-     * @throws ReflectionException
      */
     public function fields()
     {
@@ -49,9 +48,9 @@ class FormRequestResolver extends Resolver
     /**
      * 列表页获取数据
      * @param ResourceResolver $resolver
-     * @return array
      * @throws ResourceMissDataException
-     * @throws ReflectionException
+     * @throws \ReflectionException
+     * @return array
      */
     public function listFields(ResourceResolver $resolver = null)
     {
@@ -61,11 +60,10 @@ class FormRequestResolver extends Resolver
         );
     }
 
-
     /**
      * 下载功能的action请求参数
+     * @throws \ReflectionException
      * @return array
-     * @throws ReflectionException
      */
     public function downloadFields()
     {
@@ -75,10 +73,10 @@ class FormRequestResolver extends Resolver
     /**
      * 详情接口要获取的字段
      * （理论上，只要支持get请求方式，就可以支持用户按需获取）
-     * @param null|ResourceResolver $resolver
-     * @return array
+     * @param ResourceResolver|null $resolver
      * @throws ResourceMissDataException
-     * @throws ReflectionException
+     * @throws \ReflectionException
+     * @return array
      */
     public function viewFields(ResourceResolver $resolver = null)
     {
@@ -87,7 +85,7 @@ class FormRequestResolver extends Resolver
         $attributes = $resolver ? array_keys($resolver->fields()) : [];
         $relations = $resolver ? $resolver->getRelationsFields() : [];
         $data = [];
-        if($attributes){
+        if ($attributes) {
             $data[$query['fieldsName']] = (array)new FieldObject([
                 'required' => false,
                 'type' => 'string',
@@ -180,8 +178,8 @@ class FormRequestResolver extends Resolver
 
     /**
      * 将request里面的input参数名称包裹上filter标签
+     * @throws \ReflectionException
      * @return array
-     * @throws ReflectionException
      */
     protected function convertToFilter()
     {
@@ -207,8 +205,8 @@ class FormRequestResolver extends Resolver
     /**
      * @param $attribute
      * @param $rule
+     * @throws \ReflectionException
      * @return array
-     * @throws ReflectionException
      */
     protected function parseRule($attribute, $rule)
     {
@@ -219,8 +217,7 @@ class FormRequestResolver extends Resolver
         $in = $parser->in();
 
         if ($options = $this->attributeOptions($attribute)) {
-
-            //如果rule规则中有in规则，则从$options中取出in规则部分
+            // 如果rule规则中有in规则，则从$options中取出in规则部分
             if ($in) {
                 $tmp = [];
                 foreach ($options as $k1 => $v1) {
@@ -251,14 +248,14 @@ class FormRequestResolver extends Resolver
     /**
      * 获取属性可选值
      * @param $attribute
+     * @throws \ReflectionException
      * @return array
-     * @throws ReflectionException
      */
     protected function attributeOptions($attribute)
     {
         $constName = strtoupper($attribute);
 
-        //首先检查当前的request类中有没有相关的常量
+        // 首先检查当前的request类中有没有相关的常量
         if ($this->hasConstInClass($constName, $this->request)) {
             $const = $this->getClassConstants($this->request);
 

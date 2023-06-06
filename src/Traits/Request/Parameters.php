@@ -36,8 +36,8 @@ trait Parameters
 
     /**
      * 获取关联对象字段
-     * @return mixed
      * @throws ValidationException
+     * @return mixed
      */
     public function getFilteredRelations()
     {
@@ -61,8 +61,74 @@ trait Parameters
 
             return $rs;
         } catch (RelationNotFoundException $e) {
-            throw  ValidationException::withMessages(['relations' => 'relations参数不正确']);
+            throw ValidationException::withMessages(['relations' => 'relations参数不正确']);
         }
+    }
+
+    /**
+     * 获取每页显示的数量
+     * @return mixed
+     */
+    public function getPerPage()
+    {
+        return $this->input('per_page');
+    }
+
+    /**
+     * 解析排序值，当用户没有传排序的时候，默认按照{{@see sorts()}}函数第一个值排序。
+     * @throws ValidationException
+     */
+    public function getResolvedSorts()
+    {
+        $allowed = $this->sorts();
+        $sort = $this->getSort();
+
+        if (empty($sort) and isset($allowed[0])) {
+            $sort = $allowed[0];
+            if (isset($allowed[1])) {
+                $sort .= ',' . $allowed[1];
+            }
+        }
+
+        if (!$sort) {
+            return [];
+        }
+
+        $arr = explode(',', $sort);
+
+        $rs = [];
+        foreach ($arr as $value) {
+            $value = trim($value);
+            if (!$value) {
+                continue;
+            }
+
+            $type = 'asc';
+            if (preg_match('/-/', $value)) {
+                $type = 'desc';
+                $value = trim($value, '-');
+            }
+
+            foreach ($allowed as &$v) {
+                $v = trim($v, '-');
+            }
+            if (!in_array($value, $allowed)) {
+                throw ValidationException::withMessages(['relations' => $value . '字段不允许排序']);
+            }
+
+            $rs[] = [$value, $type];
+        }
+
+        return $rs;
+    }
+
+    /**
+     * 获取客户端请求的字段
+     * @return mixed
+     */
+    public function getFields()
+    {
+        return (string)$this->input('fields', '*');
     }
 
     /**
@@ -88,67 +154,8 @@ trait Parameters
             $str = trim($str, '.');
         }
         $tmp[] = $str1;
+
         return $tmp;
-    }
-
-    /**
-     * 获取每页显示的数量
-     * @return mixed
-     */
-    public function getPerPage()
-    {
-        return $this->input('per_page');
-    }
-
-    /**
-     * 解析排序值，当用户没有传排序的时候，默认按照{{@see sorts()}}函数第一个值排序。
-     * @throws ValidationException
-     */
-    public function getResolvedSorts()
-    {
-        $allowed = $this->sorts();
-        $sort = $this->getSort();
-
-        if (empty($sort) and isset($allowed[0])) {
-            $sort = '-' . $allowed[0];
-        }
-
-        if (!$sort) {
-            return [];
-        }
-
-        $arr = explode(',', $sort);
-
-        $rs = [];
-        foreach ($arr as $value) {
-            $value = trim($value);
-            if (!$value) {
-                continue;
-            }
-
-            $type = 'asc';
-            if (preg_match('/-/', $value)) {
-                $type = 'desc';
-                $value = trim($value, '-');
-            }
-
-            if (!in_array($value, $allowed)) {
-                throw  ValidationException::withMessages(['relations' => $value . '字段不允许排序']);
-            }
-
-            $rs[] = [$value, $type];
-        }
-
-        return $rs;
-    }
-
-    /**
-     * 获取客户端请求的字段
-     * @return mixed
-     */
-    public function getFields()
-    {
-        return (string)$this->input('fields', '*');
     }
 
     /* public function getFilteredRelations2()

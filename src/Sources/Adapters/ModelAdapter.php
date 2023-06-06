@@ -81,7 +81,7 @@ class ModelAdapter implements SmartModelAttributes, SmartModel
     {
         $rules = [];
         foreach ($this->attributesRules() as $column => $rule) {
-            if ($this->model->isFillable($column)===true) {
+            if ($this->model->isFillable($column) === true) {
                 $rules[$column] = $rule;
             }
         }

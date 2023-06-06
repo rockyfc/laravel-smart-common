@@ -77,7 +77,7 @@ class Comment
     /**
      * 获取指定的param标签
      * @param $var
-     * @return null|Param
+     * @return Param|null
      */
     public function paramTagByVar($var)
     {
@@ -111,6 +111,7 @@ class Comment
         }
 
         $tmp = [];
+
         /** @var DocBlock\Tags\Deprecated[] $tags */
         $tags = $this->docblock->getTagsByName('deprecated');
         if (is_array($tags)) {
@@ -151,7 +152,7 @@ class Comment
 
     /**
      * 获取date标签值
-     * @return null|string
+     * @return string|null
      */
     public function date()
     {

@@ -15,7 +15,6 @@ use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\Types\Compound;
 use phpDocumentor\Reflection\Types\ContextFactory;
 use phpDocumentor\Reflection\Types\Object_;
-use ReflectionException;
 use Smart\Common\Exceptions\ResourceMissDataException;
 use Smart\Common\Exceptions\RouteMissActionException;
 use Smart\Common\Services\ConfigService;
@@ -59,7 +58,7 @@ class ActionComment extends Comment
      * ActionComment constructor.
      * @param ControllerComment $controllerComment
      * @param Route $route
-     * @throws ReflectionException|RouteMissActionException
+     * @throws \ReflectionException|RouteMissActionException
      */
     public function __construct(ControllerComment $controllerComment, Route $route)
     {
@@ -82,15 +81,15 @@ class ActionComment extends Comment
             );
         }
 
-        //解析FormRequest对象
+        // 解析FormRequest对象
         $this->parseValidFormRequest();
 
-        //解析Resource对象
+        // 解析Resource对象
         $this->parseValidResource();
     }
 
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws ResourceMissDataException
      * @return array
      */
@@ -100,38 +99,38 @@ class ActionComment extends Comment
             return [];
         }
 
-        //如果是GET请求，并且是获取一个集合数据的话，需要做筛选，排序，以及按需获取的的特殊处理
-        //if (in_array('GET', $this->route->methods) and $this->isCollectionAction()) {
+        // 如果是GET请求，并且是获取一个集合数据的话，需要做筛选，排序，以及按需获取的的特殊处理
+        // if (in_array('GET', $this->route->methods) and $this->isCollectionAction()) {
         if (in_array('GET', $this->route->methods) and $this->hasPaginator()) {
             $data = $this->requestResolver->listFields($this->resourceResolver);
-            //是否存在排序
+            // 是否存在排序
             if ($this->hasSort()) {
                 $data = array_merge($data, $this->requestResolver->sortFields());
             }
 
-            //是否存在分页
-            //if ($this->hasPaginator()) {
-                $data = array_merge($data, $this->requestResolver->pageFields());
-            //}
+            // 是否存在分页
+            // if ($this->hasPaginator()) {
+            $data = array_merge($data, $this->requestResolver->pageFields());
+        // }
         }
-        //下载文件的请求
+        // 下载文件的请求
         elseif (in_array('GET', $this->route->methods) and $this->isDownloadAction()) {
             $data = $this->requestResolver->downloadFields();
         }
-        //如果是单纯的get请求，需要支持按需获取
+        // 如果是单纯的get请求，需要支持按需获取
         elseif (in_array('GET', $this->route->methods)) {
             $data = array_merge(
                 $this->requestResolver->viewFields($this->resourceResolver),
                 $this->requestResolver->fields()
             );
         }
-        //get之外的其他请求不支持按需获取
+        // get之外的其他请求不支持按需获取
         else {
             $data = $this->requestResolver->fields();
         }
 
         return [
-            //'name' => $param->getName(),
+            // 'name' => $param->getName(),
             'class' => get_class($this->requestResolver->request),
             'input' => $data,
         ];
@@ -139,7 +138,7 @@ class ActionComment extends Comment
 
     /**
      * 返回值
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws ResourceMissDataException
      * @return array|null
      */
@@ -150,7 +149,7 @@ class ActionComment extends Comment
         }
 
         return [
-            //'name' => $resource::class,
+            // 'name' => $resource::class,
             'class' => get_class($this->resourceResolver->resource),
             'output' => $this->resourceResolver->fields(),
         ];
@@ -179,20 +178,20 @@ class ActionComment extends Comment
 
             preg_match_all('/\\{(.*?)\\}/', $route->uri(), $rs);
 
-            //如果能获取到class，基本可以判定，这个类是一个model类
+            // 如果能获取到class，基本可以判定，这个类是一个model类
             $parameterObj = $parameter->getClass();
             $required = false;
             if ($parameterObj instanceof \ReflectionClass) {
                 /** @var Model $model */
                 $model = $parameterObj->newInstance();
                 $column = isset($fields[$name]) ? $fields[$name] : $model->getRouteKeyName();
-                //$comment = $model->getTable() . '表中对应的' . $column . '字段值。';
+                // $comment = $model->getTable() . '表中对应的' . $column . '字段值。';
                 $comment = $column;
                 $type = 'Integer';
                 if (in_array($name, $rs[1]) or !$parameter->allowsNull()) {
                     $required = true;
                 }
-                //$required = !$parameter->allowsNull();
+                // $required = !$parameter->allowsNull();
                 $default = null;
             } else {
                 $comment = '';
@@ -208,7 +207,7 @@ class ActionComment extends Comment
                     } else {
                         $flag = true;
                     }
-                } catch (ReflectionException $e) {
+                } catch (\ReflectionException $e) {
                     $flag = true;
                 }
 
@@ -232,7 +231,7 @@ class ActionComment extends Comment
 
     /**
      * 获取一个有效的FormRequest类
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return string
      */
     public function getValidFormRequestClass()
@@ -240,8 +239,7 @@ class ActionComment extends Comment
         $params = $this->reflector->getParameters();
 
         foreach ($params as $param) {
-
-            if($param->getClass()===null){
+            if ($param->getClass() === null) {
                 continue;
             }
 
@@ -257,23 +255,24 @@ class ActionComment extends Comment
 
     /**
      * 获取一个有效的FormRequest对象
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return FormRequest|null
      */
     public function getValidFormRequestInstance()
     {
         if ($class = $this->getValidFormRequestClass()) {
             $request = new $class();
-            if(method_exists($request,'setScenario')){
+            if (method_exists($request, 'setScenario')) {
                 $request->setScenario($this->actionName);
             }
+
             return $request;
         }
     }
 
     /**
      * 解析一个有效的FormRequest
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return FormRequestResolver
      */
     public function parseValidFormRequest()
@@ -293,22 +292,23 @@ class ActionComment extends Comment
             return [];
         }
         $tmp = [];
+
         /** @var See[] $tags */
         $tags = $this->docblock->getTagsByName('see');
-        //print_r($tags);
+        // print_r($tags);
         if (is_array($tags)) {
             foreach ($tags as $tag) {
                 if ($desc = $tag->getDescription()) {
-                    //$tmp[] = $desc->render();
+                    // $tmp[] = $desc->render();
                 }
 
-                if (!($tag instanceof See)) {
+                if (!$tag instanceof See) {
                     continue;
                 }
 
                 /** @var DocBlock\Tags\Reference\Fqsen $obj */
                 $obj = $tag->getReference();
-                if (!($obj instanceof DocBlock\Tags\Reference\Fqsen)) {
+                if (!$obj instanceof DocBlock\Tags\Reference\Fqsen) {
                 }
 
                 $class = (string)$obj;
@@ -338,7 +338,7 @@ class ActionComment extends Comment
         if (is_array($tags)) {
             foreach ($tags as $tag) {
                 if ($desc = $tag->getDescription()) {
-                    //$tmp[] = $desc->render();
+                    // $tmp[] = $desc->render();
                 }
 
                 /** @var Object_ $type */
@@ -349,7 +349,7 @@ class ActionComment extends Comment
 
                     if ($type instanceof Compound) {
                         /** @var Compound $type */
-                        //return $tmp[] = $type;
+                        // return $tmp[] = $type;
                         /** @var Object_ $item */
                         foreach ($type as $item) {
                             if ($resource = $this->parseObject($item)) {
@@ -463,7 +463,7 @@ class ActionComment extends Comment
     /**
      * 获取某一个类的属性名称
      * @param $class
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return array
      */
     protected function getClassProperties($class)
@@ -498,7 +498,7 @@ class ActionComment extends Comment
      */
     protected function parseObject($object)
     {
-        if (!($object instanceof Object_)) {
+        if (!$object instanceof Object_) {
             return null;
         }
 
@@ -529,7 +529,7 @@ class ActionComment extends Comment
     /**
      * 判断类是否是用户自定义的资源类
      * @param $class
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return bool
      */
     protected function isCustomResource($class)
@@ -545,7 +545,7 @@ class ActionComment extends Comment
     /**
      * 判断是分页
      * @param $class
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return bool
      */
     protected function isPaginator($class)
@@ -560,7 +560,7 @@ class ActionComment extends Comment
 
     /**
      * 是否存在分页
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return bool
      */
     protected function hasPaginator()
@@ -576,7 +576,7 @@ class ActionComment extends Comment
 
     /**
      * 判断当前action是否支持分页
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return bool
      */
     protected function hasSort()
@@ -596,11 +596,11 @@ class ActionComment extends Comment
      * 获取某一个类的所有父类
      * @param $class
      * @param $map
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
-    protected function parentClass($class, &$map=[])
+    protected function parentClass($class, &$map = [])
     {
-        if(!class_exists($class)){
+        if (!class_exists($class)) {
             return;
         }
 
@@ -613,7 +613,7 @@ class ActionComment extends Comment
 
     /**
      * @param $class
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return bool
      */
     protected function isFormRequestClass($class)
@@ -628,7 +628,7 @@ class ActionComment extends Comment
      *
      * 一般的，返回集合的action都被视为是列表action，
      * 列表action应当支持按需获取、自定义排序、查询条件、关联对象的获取
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return bool
      */
     protected function isCollectionAction()
@@ -661,5 +661,4 @@ class ActionComment extends Comment
 
         return in_array($response[0], $classes);
     }
-
 }

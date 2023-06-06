@@ -67,7 +67,7 @@ trait Casting
         $type = strtolower($parser->phpType());
 
         if ($type === 'int') {
-            //如果是时间类型，则特殊处理
+            // 如果是时间类型，则特殊处理
             if ($value instanceof \Illuminate\Support\Carbon) {
                 return $value->timestamp;
             }

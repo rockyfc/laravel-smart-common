@@ -22,7 +22,7 @@ class Zip
         $dirName = $pathInfo['basename'];
 
         $z = new \ZipArchive();
-        $z->open($outZipPath, \ZIPARCHIVE::CREATE);
+        $z->open($outZipPath, \ZipArchive::CREATE);
         $z->addEmptyDir($dirName);
         self::folderToZip($sourcePath, $z, strlen("{$parentPath}/"));
         $z->close();

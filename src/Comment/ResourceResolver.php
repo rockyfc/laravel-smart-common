@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use ReflectionException;
 use Smart\Common\Exceptions\ResourceMissDataException;
 
 /**
@@ -25,7 +24,7 @@ class ResourceResolver extends Resolver
     public $request;
 
     /**
-     * @var null|string
+     * @var string|null
      */
     public $actionName;
 
@@ -39,7 +38,7 @@ class ResourceResolver extends Resolver
      * ResourceResolver constructor.
      * @param JsonResource $resource
      * @param Request $request
-     * @param null|string $actionName
+     * @param string|null $actionName
      */
     public function __construct(JsonResource $resource, Request $request, string $actionName = 'index')
     {
@@ -50,9 +49,9 @@ class ResourceResolver extends Resolver
 
     /**
      * 获取所有属性字段的基本信息
-     * @return array
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws ResourceMissDataException
+     * @return array
      */
     public function fields()
     {
@@ -68,14 +67,13 @@ class ResourceResolver extends Resolver
         }
 
         $relations = null;
-        //判断一下，资源类中是否存在relations方法，如果存在，则从资源类中获取资源对应关系
+        // 判断一下，资源类中是否存在relations方法，如果存在，则从资源类中获取资源对应关系
         if (method_exists($this->resource, 'relations')) {
             $relations = (array)$this->resource->relations();
         }
 
         $labels = (array)$this->resourceLabels();
         $rules = (array)$this->resourceRules();
-
 
         $data = [];
         foreach ($array as $attribute => $value) {
@@ -89,7 +87,7 @@ class ResourceResolver extends Resolver
             if (isset($rules[$attribute])) {
                 $parser = new RuleParser($rules[$attribute]);
                 $type = $parser->typeDetail();
-            } else{
+            } else {
                 $type = RuleParser::guessType($attribute);
             }
 
@@ -116,9 +114,8 @@ class ResourceResolver extends Resolver
                 }
             }
 
-
             $data[$attribute] = [
-                //'required' => null,
+                // 'required' => null,
                 'type' => $type,
                 'options' => array_keys($options),
                 'comment' => $comment,
@@ -138,22 +135,24 @@ class ResourceResolver extends Resolver
     }
 
     /**
-     * @return array
      * @throws ResourceMissDataException
+     * @return array
      */
     protected function parseResourceToArrayMethod()
     {
         $array = [];
+
         try {
-            //当解析toArray产生异常的时候，说明toArray()方法中代码中写法较为复杂，文档程序解释不了
+            // 当解析toArray产生异常的时候，说明toArray()方法中代码中写法较为复杂，文档程序解释不了
             $array = $this->resource->toArray(request());
         } catch (\Throwable $e) {
-            //如果toArray解析有问题，则检查用户是否自行实现了fields方法，如果实现了则从fields方法中获取要返回的字段
+            // 如果toArray解析有问题，则检查用户是否自行实现了fields方法，如果实现了则从fields方法中获取要返回的字段
             if (method_exists($this->resource, 'fields')) {
                 $columns = array_values($this->resource->fields());
                 $array = array_combine($columns, $columns);
             } else {
                 $msg = get_class($this->resource) . '::toArray()方法解析失败，请创建' . get_class($this->resource) . '::fields()函数来声明返回值';
+
                 throw new ResourceMissDataException($msg);
             }
         }
@@ -230,14 +229,14 @@ class ResourceResolver extends Resolver
      *
      * 首先检查当前的resource类中有没有相关的常量，如果没有则检查
      * @param $attribute
-     * @return null|array
-     * @throws ReflectionException
+     * @throws \ReflectionException
+     * @return array|null
      */
     protected function attributeOptions($attribute)
     {
         $constName = strtoupper($attribute);
 
-        //首先检查当前的resource类中有没有相关的常量
+        // 首先检查当前的resource类中有没有相关的常量
         if ($this->hasConstInClass($constName, $this->resource)) {
             $const = $this->getClassConstants($this->resource);
 
@@ -248,7 +247,7 @@ class ResourceResolver extends Resolver
             return [];
         }
 
-        //然后检查当前resource中的model中有没有相关的常量
+        // 然后检查当前resource中的model中有没有相关的常量
         $model = $this->resource->model();
         if ($this->hasConstInClass($constName, $model)) {
             $const = $this->getClassConstants($model);

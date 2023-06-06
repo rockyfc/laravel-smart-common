@@ -21,7 +21,7 @@ trait FriendlyToDoc
     /**
      * 重写，防止没有找到成员变量的时候报错，单纯为了文档程序能正常解析toArray函数
      * @param string $key
-     * @return null|mixed
+     * @return mixed|null
      */
     public function __get($key)
     {

@@ -2,7 +2,6 @@
 
 namespace Smart\Common\Middleware;
 
-use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -39,31 +38,31 @@ class ApiActiveFilter
 
     /**
      * @param $request
-     * @param Closure $next
+     * @param \Closure $next
      * @param null $guard
      * @return JsonResponse|\Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function handle($request, Closure $next, $guard = null)
+    public function handle($request, \Closure $next, $guard = null)
     {
         $this->request = $request;
 
         /** @var JsonResponse $response */
         $response = $next($request);
-        if (!($response instanceof JsonResponse)) {
+        if (!$response instanceof JsonResponse) {
             return $response;
         }
 
         $resource = $response->getData();
         $data = $this->toArray($resource);
 
-        //如果带有分页信息，一定会存在data索引
+        // 如果带有分页信息，一定会存在data索引
         if (isset($data['links'])) {
             $data['data'] = $this->filter($data['data']);
 
             return $response->setData($data);
         }
 
-        //判断用户是否设置了外层数据包裹
+        // 判断用户是否设置了外层数据包裹
         if (JsonResource::$wrap) {
             if (!isset($data[JsonResource::$wrap])) {
                 return $response->setData($data);
@@ -71,7 +70,7 @@ class ApiActiveFilter
             $data = $data[JsonResource::$wrap];
         }
 
-        //如果第一个所谓是数字，说明是一个list
+        // 如果第一个所谓是数字，说明是一个list
         if (isset($data[0])) {
             return $response->setData($this->filter($data));
         }
@@ -119,7 +118,6 @@ class ApiActiveFilter
 
         $tmp = [];
         foreach ($item as $column => $value) {
-
             if (!is_int($column) and !in_array($column, $rootFields)) {
                 continue;
             }
@@ -139,6 +137,7 @@ class ApiActiveFilter
                 $rootFields2 = $this->extractRootFields($rootFields2);
 
                 $tmp[$column] = $this->filterItem($value, $rootFields2, $prefix2);
+
                 continue;
             }
 
@@ -239,7 +238,7 @@ class ApiActiveFilter
     {
         return array_filter($array, function ($value) {
             $value = trim($value);
-            //去空
+            // 去空
             if ('' === $value or null === $value) {
                 return false;
             }

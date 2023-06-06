@@ -17,7 +17,7 @@ trait Scenario
     {
         parent::prepareForValidation();
 
-        //将接口名称当做当前场景
+        // 将接口名称当做当前场景
         $this->setScenario(
             $this->route()->getActionMethod()
         );

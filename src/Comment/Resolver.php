@@ -4,7 +4,6 @@ namespace Smart\Common\Comment;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
-use ReflectionException;
 use Smart\ApiDoc\Services\ConfigService;
 
 /**
@@ -30,7 +29,7 @@ class Resolver
      * 中是否存在指定的常量数组
      * @param $constName
      * @param $class
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return bool
      */
     protected function hasConstInClass($constName, $class)
@@ -43,7 +42,7 @@ class Resolver
      * 获取类中的所有常量
      *
      * @param $class
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @return array
      */
     protected function getClassConstants($class)
